@@ -19,8 +19,25 @@ public class TaskManager {
         return nextId++;
     }
 
+//Вывод всех задач (Tasks и Epics со своими Subtasks)
+    public String getAllTasksEpicAndSubtasks(){
+        String epicTaskAndSubtasks = "";
+        for (Epic value : epicsById.values()) {
+            String subtasks = "";
+            if (value.getSubtasksIds()!=null) {
+                for (Integer subtasksId : value.getSubtasksIds()) {
+                    subtasks = subtasks + "\n" + subtasksById.get(subtasksId);
+                }
+            }
+            epicTaskAndSubtasks = epicTaskAndSubtasks + "\n" + value + subtasks + "\n";
+        }
+        return getAllTasks() + "\n" + epicTaskAndSubtasks;
+    }
+
     //--Task-->
-    //2.1. Получение списка всех задач Task
+    //2.1. Получение списка всех задач Task (такое требование ТЗ:).
+    // (Методы для каждого из типа задач(Задача/Эпик/Подзадача): Получение списка всех задач.)
+    //Выше дописан метод который выводит последовательно Tasks, Epics с их Subtasks
     public String getAllTasks() {
         String task = "";
         for (Task value : tasksById.values()) {
@@ -68,6 +85,7 @@ public class TaskManager {
     //2.2. Удаление всех задач Epic
     public void clearAllEpics() {
         epicsById.clear();
+        subtasksById.clear();
     }
 
     //2.3. Получение Epic по идентификатору
@@ -78,11 +96,12 @@ public class TaskManager {
     //2.4. Создание Epic
     public void createEpic(Epic epic) {
         epic.setId(getNextId());
-        epic.setStatus(TaskStatus.NEW);
         epicsById.put(epic.getId(), epic);
     }
 
     //2.5. Обновление Epic
+    //Этот метод по сути не нужен, и так всё отлично обновляется и статусы и значения переменных класса,
+    // но он есть в ТЗ и даже описана его реализация на примере Task (п.2.5 ТЗ)
     public void updateEpic(Epic epic) {
         epicsById.put(epic.getId(), epic);
     }
@@ -105,6 +124,10 @@ public class TaskManager {
     //2.2. Удаление всех задач Subtask
     public void clearAllSubtasks() {
         subtasksById.clear();
+        for (Epic value : epicsById.values()) {
+            value.setStatus(TaskStatus.NEW);//меняем статусы epic
+            value.setSubtasksIds(null); //затираем все ArrayList в epic
+        }
     }
 
     //2.2. Удаление всех задач из Epic
@@ -142,7 +165,7 @@ public class TaskManager {
 
     //2.5. Обновление Subtask
     public void updateSubtask(Subtask subtask) {
-        tasksById.put(subtask.getId(), subtask);
+        subtasksById.put(subtask.getId(), subtask);
         updateEpicStatus(epicsById.get(subtask.getEpicId())); //обновляем статус epic по ключу, полученному из subtask
     }
 
@@ -178,11 +201,9 @@ public class TaskManager {
         }
         if (doneStatusCalc==epic.getSubtasksIds().size()) {
             epic.setStatus(TaskStatus.DONE);
-        } else if (newStatusCalc==epic.getSubtasksIds().size()) {
+        } else if (newStatusCalc != epic.getSubtasksIds().size()) { epic.setStatus(TaskStatus.IN_PROGRESS);
+        } else {
             epic.setStatus(TaskStatus.NEW);
-        } else epic.setStatus(TaskStatus.IN_PROGRESS);
-        {
-            updateEpic(epic);
         }
     }
 }
