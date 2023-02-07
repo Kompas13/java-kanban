@@ -116,6 +116,7 @@ public class TaskManager {
                 subtasksById.remove(id);
             }
         }
+        epic.setStatus(TaskStatus.NEW);
     }
 
     //2.3. Получение Subtask по идентификатору
@@ -166,20 +167,22 @@ public class TaskManager {
 
     //Обновление статуса Epic
     private void updateEpicStatus(Epic epic) {
-        boolean statusFlag=false;
+        int doneStatusCalc=0;
+        int newStatusCalc=0;
         for (Integer idElement : epic.getSubtasksIds()) {
-            if(subtasksById.get(idElement).getStatus()!=(TaskStatus.DONE)){
-                statusFlag=false;
-                break;
-            } else {
-                statusFlag=true;
+            if(subtasksById.get(idElement).getStatus()==(TaskStatus.DONE)){
+                doneStatusCalc++;
+            } else if(subtasksById.get(idElement).getStatus()==(TaskStatus.NEW)){
+                newStatusCalc++;
             }
         }
-        if (!statusFlag){
-            epic.setStatus(TaskStatus.IN_PROGRESS);
-        } else {
+        if (doneStatusCalc==epic.getSubtasksIds().size()) {
             epic.setStatus(TaskStatus.DONE);
+        } else if (newStatusCalc==epic.getSubtasksIds().size()) {
+            epic.setStatus(TaskStatus.NEW);
+        } else epic.setStatus(TaskStatus.IN_PROGRESS);
+        {
+            updateEpic(epic);
         }
-        updateEpic(epic);
     }
 }

@@ -11,43 +11,30 @@ public class Main {
         TaskManager taskManager = new TaskManager();
 
         //Создаем задачи
-        Task task = new Task();
-        task.setTitle("Task 1");
-        task.setStatus(TaskStatus.NEW);
+        Task task = new Task("Task 1", TaskStatus.NEW);
         taskManager.createTask(task);
 
-        Task task2 = new Task();
-        task2.setTitle("Task 2");
-        task2.setStatus(TaskStatus.NEW);
+        Task task2 = new Task("Task 2", TaskStatus.NEW);
         taskManager.createTask(task2);
 
         //Создаем эпики
-        Epic epic = new Epic();
-        epic.setTitle("my epic 1");
+        Epic epic = new Epic("my epic 1");
         taskManager.createEpic(epic);
 
-        Epic epic2 = new Epic();
-        epic2.setTitle("my epic 2");
+        Epic epic2 = new Epic("my epic 2");
         taskManager.createEpic(epic2);
 
-        Epic epic3 = new Epic();
-        epic3.setTitle("my epic 3");
+        Epic epic3 = new Epic("my epic 3");
         taskManager.createEpic(epic3);
 
         //Создаем subtasks
-        Subtask subtask1Epic1 = new Subtask();
-        subtask1Epic1.setTitle("subtask#1 epic#1");
-        subtask1Epic1.setStatus(TaskStatus.DONE);
+        Subtask subtask1Epic1 = new Subtask("subtask#1 epic#1", TaskStatus.DONE);
         taskManager.createSubtask(epic, subtask1Epic1);
 
-        Subtask subtask2Epic1 = new Subtask();
-        subtask2Epic1.setTitle("subtask#2 epic#1");
-        subtask2Epic1.setStatus(TaskStatus.DONE);
+        Subtask subtask2Epic1 = new Subtask("subtask#2 epic#1", TaskStatus.DONE);
         taskManager.createSubtask(epic, subtask2Epic1);
 
-        Subtask subtask1Epic2 = new Subtask();
-        subtask1Epic2.setTitle("subtask#1 for epic2");
-        subtask1Epic2.setStatus(TaskStatus.IN_PROGRESS);
+        Subtask subtask1Epic2 = new Subtask("subtask#1 for epic2", TaskStatus.IN_PROGRESS);
         taskManager.createSubtask(epic2, subtask1Epic2);
 
         //Выводим всё на экран:
@@ -55,6 +42,7 @@ public class Main {
         System.out.println("\nPrint epics: " + taskManager.getAllEpic());
         System.out.println("\nPrint epic 1 subtasks: " + taskManager.getAllSubtaskFromEpic(epic));
         System.out.println("\nPrint epic 2 subtasks: " + taskManager.getAllSubtaskFromEpic(epic2));
+        System.out.println("---");
 
         //Обновляем задачу subtask2:
         System.out.println("\nRefresh task subtask2Epic1:");
@@ -64,10 +52,17 @@ public class Main {
         System.out.println("\nPrint epics: " + taskManager.getAllEpic());
         System.out.println("\nPrint epic 1 subtasks:" + taskManager.getAllSubtaskFromEpic(epic));
 
-        //Удаляем subtask 2 и epic 3:
+        //Удаляем subtask 2 и epic 3 по ID:
         System.out.println("\ndelite subtask#2 and epic 3:");
         taskManager.deleteEpicById(5);
         taskManager.deleteSubtaskById(7);
+        System.out.println("\nPrint epics: " + taskManager.getAllEpic());
+        System.out.println("\nPrint epic 1 subtasks: " + taskManager.getAllSubtaskFromEpic(epic));
+        System.out.println("\nPrint epic 2 subtasks: " + taskManager.getAllSubtaskFromEpic(epic2));
+
+        //удаляем все Subtask входящие в epic
+        System.out.println("\ndelite all subtask from epic:");
+        taskManager.clearAllSubtasksFromEpic(epic);
         System.out.println("\nPrint epics: " + taskManager.getAllEpic());
         System.out.println("\nPrint epic 1 subtasks: " + taskManager.getAllSubtaskFromEpic(epic));
         System.out.println("\nPrint epic 2 subtasks: " + taskManager.getAllSubtaskFromEpic(epic2));
