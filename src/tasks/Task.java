@@ -3,7 +3,7 @@ package tasks;
 public class Task {
     private int id;
     private String title;
-    String description;
+    private String description;
     private TaskStatus status;
 
     public Task(String title, String description, TaskStatus status) {
