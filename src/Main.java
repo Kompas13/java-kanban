@@ -11,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager taskManager = Managers.getInMemoryTaskManager(Managers.getDefaultHistory());
+        TaskManager taskManager = Managers.getDefaultTaskManager();
 
 
         //Создаем задачи
@@ -42,13 +42,16 @@ public class Main {
         taskManager.createSubtask(epic2, new Subtask("subtask#1 epic#2", "Description 1-2-2", TaskStatus.IN_PROGRESS));
 
         //Выводим всё на экран:
-        System.out.print("--Print all tasks--");
-        System.out.println(taskManager.getAllTasksEpicAndSubtasks());
+        System.out.print("--Print all tasks--\n");
+        for (Task allTasksEpicAndSubtask : taskManager.getAllTasksEpicAndSubtasks()) {
+            System.out.println(allTasksEpicAndSubtask);
+        }
 
         //Получаем задачи по ID
         taskManager.getTaskById(1);
         taskManager.getTaskById(2);
         taskManager.getEpicById(3);
+       // taskManager.getTaskById(33);
         taskManager.getEpicById(4);
         taskManager.getEpicById(5);
         taskManager.getSubtaskById(6);
@@ -57,6 +60,9 @@ public class Main {
         taskManager.getSubtaskById(9);
         taskManager.getSubtaskById(10);
         taskManager.getSubtaskById(11);
+        taskManager.getSubtaskById(13);
+        taskManager.deleteSubtaskById(10);//удаляем Subtask
+        taskManager.deleteEpicById(4); //удаляем Epic
 
         System.out.println("--Print history--");
         List<Task> allTasksInHistory=taskManager.getHistory();
