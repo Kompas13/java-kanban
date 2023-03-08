@@ -2,44 +2,40 @@ package manager;
 
 import tasks.Task;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
-public class InMemoryHistoryManager implements HistoryManager{
+public class InMemoryHistoryManager implements HistoryManager {
 
-    private Node <Task> first;
-    private Node <Task> last;
-    private final List<Task> taskList = new LinkedList<>();
-    HashMap<Integer, Node<Task>> linkedMap = new HashMap<>();
+    private Node first;
+    private Node last;
+    HashMap<Integer, Node> linkedMap = new HashMap<>();
 
 
     @Override
     public void add(Task task) {
-        Node <Task> currentNode = new Node<>(task);
-
-        if(linkedMap.containsKey(task.getId())){
-            remove(task.getId());
-            linkedMap.remove(task.getId());
+        if (task!=null) {
+            if (linkedMap.containsKey(task.getId())) {
+                remove(task.getId());
+            }
+            Node l = last;
+            Node currentNode = new Node(l, task, null);
+            last = currentNode;
+            if (l == null) {
+                first = currentNode;
+            }
+            else {
+                l.next = currentNode;
+            }
+            linkedMap.put(task.getId(), currentNode);
         }
-
-        if (isEmpty()) {
-            last.next = currentNode;
-            currentNode.next = null;
-            currentNode.prev = last;
-        } else {
-            currentNode.next = null;
-            currentNode.prev = null;
-            first = currentNode;
-        }
-        last = currentNode;
-
-        linkedMap.put(task.getId(), currentNode);
     }
 
     @Override
     public List<Task> getHistory() {
-        Node <Task> current = first;
+        List<Task> taskList = new ArrayList<>();
+        Node current = first;
         while (current != null) {
             taskList.add(current.getTask());
             current = current.next;
@@ -49,43 +45,44 @@ public class InMemoryHistoryManager implements HistoryManager{
 
     @Override
     public void remove(int id) {
-        if (isEmpty()) {
-            Node <Task> temp = linkedMap.get(id);
-            if (temp == first&&temp.next==null)
-            {
+        if (!isEmpty()) {
+            Node temp = linkedMap.get(id);
+            Node previousElement = temp.prev;
+            Node nextElement = temp.next;
+            if (temp == first&&temp.next==null) {
                 first= null;
-                last=null;
             }
-
-            else if (temp == first)
-            {
+            else if (temp == first) {
                 first=first.next;
                 first.prev=null;
             }
-            else if(temp==last){
+            else if(temp==last) {
                 last=last.prev;
                 last.next=null;
             }
             else {
-                temp.prev.next=temp.next;
-                temp.next.prev=temp.prev;
+                previousElement.next=nextElement;
+                nextElement.prev=previousElement;
             }
         }
+        linkedMap.remove(id);
     }
 
     public boolean isEmpty() {
-        return (first != null);
+        return (first == null);
     }
 }
 
-class Node <Task> {
+class Node  {
 
     public Task task;
-    public Node<Task> next;
-    public Node<Task> prev;
+    public Node next;
+    public Node prev;
 
-    public Node(Task task) {
+    public Node(Node prev, Task task, Node next) {
         this.task = task;
+        this.next = next;
+        this.prev = prev;
     }
 
     public Task getTask() {

@@ -64,9 +64,7 @@ public class InMemoryTaskManager implements TaskManager {
     //2.3. Получение Task по идентификатору
     @Override
     public Task getTaskById(int id) {
-        if(tasksById.get(id)!=null) {
-            historyManager.add(tasksById.get(id));
-        }
+        historyManager.add(tasksById.get(id));
         return tasksById.get(id);
     }
 
@@ -111,9 +109,7 @@ public class InMemoryTaskManager implements TaskManager {
     //2.3. Получение Epic по идентификатору
     @Override
     public Task getEpicById(int id) {
-        if(epicsById.get(id)!=null) {
-            historyManager.add(epicsById.get(id));
-        }
+        historyManager.add(epicsById.get(id));
         return epicsById.get(id);
     }
 
@@ -176,9 +172,7 @@ public class InMemoryTaskManager implements TaskManager {
     //2.3. Получение Subtask по идентификатору
     @Override
     public Task getSubtaskById(int id) {
-        if(subtasksById.get(id)!=null){
-            historyManager.add(subtasksById.get(id));
-        }
+        historyManager.add(subtasksById.get(id));
         return subtasksById.get(id);
     }
 
