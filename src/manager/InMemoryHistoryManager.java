@@ -15,21 +15,21 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        if (task!=null) {
-            if (linkedMap.containsKey(task.getId())) {
-                remove(task.getId());
-            }
-            Node l = last;
-            Node currentNode = new Node(l, task, null);
-            last = currentNode;
-            if (l == null) {
-                first = currentNode;
-            }
-            else {
-                l.next = currentNode;
-            }
-            linkedMap.put(task.getId(), currentNode);
+        if (task==null) return;
+
+        if (linkedMap.containsKey(task.getId())) {
+            remove(task.getId());
         }
+        Node currentNode = new Node(last, task, null);
+        if (last == null) {
+            first = currentNode;
+        }
+        else {
+            last.next = currentNode;
+        }
+        last = currentNode;
+        linkedMap.put(task.getId(), currentNode);
+
     }
 
     @Override
@@ -46,11 +46,13 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void remove(int id) {
         if (!isEmpty()) {
+            if (linkedMap.get(id)==null) return;
             Node temp = linkedMap.get(id);
             Node previousElement = temp.prev;
             Node nextElement = temp.next;
             if (temp == first&&temp.next==null) {
-                first= null;
+                first = null;
+                last = null;
             }
             else if (temp == first) {
                 first=first.next;
