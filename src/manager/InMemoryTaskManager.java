@@ -10,12 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    private final HashMap<Integer, Task> tasksById = new HashMap<>();
-    private final HashMap<Integer, Epic> epicsById = new HashMap<>();
-    private final HashMap<Integer, Subtask> subtasksById = new HashMap<>();
-    private final HistoryManager historyManager;
+    public HashMap<Integer, Task> tasksById= new HashMap<>();
+    public HashMap<Integer, Epic> epicsById= new HashMap<>();
+    public HashMap<Integer, Subtask> subtasksById= new HashMap<>();
+    public HistoryManager historyManager;
 
-    private int nextId = 1 ;
+    public int nextId=1;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.historyManager = historyManager;
@@ -84,6 +84,9 @@ public class InMemoryTaskManager implements TaskManager {
     //2.6. Удаление Task по идентификатору
     @Override
     public void deleteTaskById(int id) {
+        if (!tasksById.containsKey(id)){
+            return;
+        }
         historyManager.remove(id);
         tasksById.remove(id);
     }
@@ -98,7 +101,7 @@ public class InMemoryTaskManager implements TaskManager {
     //2.2. Удаление всех задач Epic
     @Override
     public void clearAllEpics() {
-        for (Integer id : epicsById.keySet()) {
+        for (Integer id : epicsById.keySet()){
             historyManager.remove(id);
         }
         epicsById.clear();
@@ -108,7 +111,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //2.3. Получение Epic по идентификатору
     @Override
-    public Task getEpicById(int id) {
+    public Epic getEpicById(int id) {
         historyManager.add(epicsById.get(id));
         return epicsById.get(id);
     }
@@ -129,9 +132,11 @@ public class InMemoryTaskManager implements TaskManager {
     //2.6. Удаление Epic по идентификатору
     @Override
     public void deleteEpicById(int id) {
+        if (!epicsById.containsKey(id)){
+            return;
+        }
         clearAllSubtasksFromEpic(epicsById.get(id));
         historyManager.remove(id);
-
         epicsById.remove(id);
     }
 
@@ -171,7 +176,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     //2.3. Получение Subtask по идентификатору
     @Override
-    public Task getSubtaskById(int id) {
+    public Subtask getSubtaskById(int id) {
         historyManager.add(subtasksById.get(id));
         return subtasksById.get(id);
     }
@@ -203,6 +208,9 @@ public class InMemoryTaskManager implements TaskManager {
     //2.6. Удаление Subtask по идентификатору
     @Override
     public void deleteSubtaskById(int id) {
+        if (!subtasksById.containsKey(id)){
+            return;
+        }
         int idEpic = subtasksById.get(id).getEpicId(); //получаем id epic к которому привязан удаляемый subtask
         epicsById.get(idEpic).getSubtasksIds().remove(Integer.valueOf(id));// удаляем id subtask из ArrayList epic
         historyManager.remove(id);
@@ -236,7 +244,8 @@ public class InMemoryTaskManager implements TaskManager {
         }
         if (doneStatusCalc==epic.getSubtasksIds().size()) {
             epic.setStatus(TaskStatus.DONE);
-        } else if (newStatusCalc != epic.getSubtasksIds().size()) { epic.setStatus(TaskStatus.IN_PROGRESS);
+        } else if (newStatusCalc != epic.getSubtasksIds().size()){
+            epic.setStatus(TaskStatus.IN_PROGRESS);
         } else {
             epic.setStatus(TaskStatus.NEW);
         }

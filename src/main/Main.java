@@ -1,3 +1,5 @@
+package main;
+
 import manager.HistoryManager;
 import manager.Managers;
 import manager.TaskManager;
@@ -32,12 +34,9 @@ public class Main {
         taskManager.createSubtask(epic, new Subtask("subtask#1 epic#1", "Description 1-1-1", TaskStatus.DONE));
         taskManager.createSubtask(epic, new Subtask("subtask#2 epic#1", "Description 1-2-2", TaskStatus.DONE));
         taskManager.createSubtask(epic, new Subtask("subtask#3 epic#1", "Description 1-2-2", TaskStatus.DONE));
+        taskManager.deleteEpicById(3);
 
-        //Выводим всё на экран:
-        System.out.print("--Print all tasks--\n");
-        for (Task allTasksEpicAndSubtask : taskManager.getAllTasksEpicAndSubtasks()) {
-            System.out.println(allTasksEpicAndSubtask);
-        }
+
 
         //Получаем задачи по ID
         taskManager.getTaskById(1);
@@ -52,11 +51,17 @@ public class Main {
         taskManager.getSubtaskById(7);
         taskManager.deleteSubtaskById(7);//удаляем Subtask
         //taskManager.deleteEpicById(4); //удаляем Epic
-        taskManager.deleteEpicById(3);//удаляем Epic
-        //taskManager.deleteTaskById(1);
-        //taskManager.deleteTaskById(2);
+        //taskManager.deleteEpicById(3);//удаляем Epic
+        //taskManager.clearAllSubtasksFromEpic(epic2);
+
+        //Выводим всё на экран:
+        System.out.print("--Print all tasks--\n");
+        for (Task allTasksEpicAndSubtask : taskManager.getAllTasksEpicAndSubtasks()) {
+            System.out.println(allTasksEpicAndSubtask);
+        }
 
         System.out.println("--Print history--");
+
         List<Task> allTasksInHistory=taskManager.getHistory();
         for (Task task1 : allTasksInHistory) {
             System.out.println(task1);
