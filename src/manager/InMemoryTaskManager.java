@@ -7,6 +7,7 @@ import tasks.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
@@ -29,7 +30,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getAllTasksEpicAndSubtasks(){
         List<Task> tasks = new ArrayList<>(tasksById.values());
-        for (Epic valueEpic : epicsById.values()) {
+        for (Epic valueEpic : epicsById.values()) { //Эти циклы были сделаны для удобства работы с программой
+            //при выводе в консоль и сохранении в файл под каждым эпиком выводятся его подзадачи (если они есть)
+            //мне кажется это более логичным и читабельным чем перечень эпиков, а потом перечень сабтасков.
             tasks.add(valueEpic);
             if (valueEpic.getSubtasksIds()!=null) {
                 for (Integer subtasksId : valueEpic.getSubtasksIds()) {
@@ -163,15 +166,17 @@ public class InMemoryTaskManager implements TaskManager {
     //2.2. Удаление всех задач из Epic
     @Override
     public void clearAllSubtasksFromEpic(Epic epic) {
-        ArrayList<Integer> subtasksIdList;
+        LinkedList<Integer> subtasksIdList = null;
         if (epic.getSubtasksIds()!=null) {
             subtasksIdList = epic.getSubtasksIds();
             for (Integer id : subtasksIdList) {
                 historyManager.remove(id);
                 subtasksById.remove(id);
             }
+            subtasksIdList.clear();
+            epic.setSubtasksIds(subtasksIdList);
+            epic.setStatus(TaskStatus.NEW);
         }
-        epic.setStatus(TaskStatus.NEW);
     }
 
     //2.3. Получение Subtask по идентификатору
@@ -186,11 +191,11 @@ public class InMemoryTaskManager implements TaskManager {
     public void createSubtask(Epic epic, Subtask subtask) {
         subtask.setId(getNextId());
         subtasksById.put(subtask.getId(), subtask);
-        ArrayList<Integer> subtasksIdList;
+        LinkedList<Integer> subtasksIdList;
         if (epic.getSubtasksIds()!=null) {
             subtasksIdList = epic.getSubtasksIds();
         } else {
-            subtasksIdList = new ArrayList<>();
+            subtasksIdList = new LinkedList<>();
         }
         subtasksIdList.add(subtask.getId());//положили в ArrayList id substring
         epic.setSubtasksIds(subtasksIdList);//положили в epic обновленный массив

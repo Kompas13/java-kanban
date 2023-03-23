@@ -34,7 +34,7 @@ public class Main {
         taskManager.createSubtask(epic, new Subtask("subtask#1 epic#1", "Description 1-1-1", TaskStatus.DONE));
         taskManager.createSubtask(epic, new Subtask("subtask#2 epic#1", "Description 1-2-2", TaskStatus.DONE));
         taskManager.createSubtask(epic, new Subtask("subtask#3 epic#1", "Description 1-2-2", TaskStatus.DONE));
-        taskManager.deleteEpicById(3);
+
 
 
 
@@ -49,10 +49,10 @@ public class Main {
         taskManager.getSubtaskById(7);
         taskManager.getSubtaskById(6);
         taskManager.getSubtaskById(7);
-        taskManager.deleteSubtaskById(7);//удаляем Subtask
+        //taskManager.deleteSubtaskById(7);//удаляем Subtask
         //taskManager.deleteEpicById(4); //удаляем Epic
         //taskManager.deleteEpicById(3);//удаляем Epic
-        //taskManager.clearAllSubtasksFromEpic(epic2);
+        taskManager.clearAllSubtasksFromEpic(epic);
 
         //Выводим всё на экран:
         System.out.print("--Print all tasks--\n");
