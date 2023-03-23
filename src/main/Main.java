@@ -35,9 +35,6 @@ public class Main {
         taskManager.createSubtask(epic, new Subtask("subtask#2 epic#1", "Description 1-2-2", TaskStatus.DONE));
         taskManager.createSubtask(epic, new Subtask("subtask#3 epic#1", "Description 1-2-2", TaskStatus.DONE));
 
-
-
-
         //Получаем задачи по ID
         taskManager.getTaskById(1);
         taskManager.getTaskById(2);
@@ -61,7 +58,6 @@ public class Main {
         }
 
         System.out.println("--Print history--");
-
         List<Task> allTasksInHistory=taskManager.getHistory();
         for (Task task1 : allTasksInHistory) {
             System.out.println(task1);
