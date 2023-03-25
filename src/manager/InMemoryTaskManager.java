@@ -11,8 +11,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
-    public HashMap<Integer, Task> tasksById= new HashMap<>();
-    public HashMap<Integer, Epic> epicsById= new HashMap<>();
+    public HashMap<Integer, Task> tasksById = new HashMap<>();
+    public HashMap<Integer, Epic> epicsById = new HashMap<>();
     public HashMap<Integer, Subtask> subtasksById= new HashMap<>();
     public HistoryManager historyManager;
 
@@ -30,9 +30,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getAllTasksEpicAndSubtasks(){
         List<Task> tasks = new ArrayList<>(tasksById.values());
-        for (Epic valueEpic : epicsById.values()) { //Эти циклы были сделаны для удобства работы с программой
-            //при выводе в консоль и сохранении в файл под каждым эпиком выводятся его подзадачи (если они есть)
-            //мне кажется это более логичным и читабельным чем перечень эпиков, а потом перечень сабтасков.
+        for (Epic valueEpic : epicsById.values()) {
             tasks.add(valueEpic);
             if (valueEpic.getSubtasksIds()!=null) {
                 for (Integer subtasksId : valueEpic.getSubtasksIds()) {

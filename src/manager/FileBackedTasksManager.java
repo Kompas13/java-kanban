@@ -14,6 +14,7 @@ import java.util.List;
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
     private final String filename;
+    private final String NEW_LINE = "\n";
 
     public FileBackedTasksManager(HistoryManager historyManager) {
         super(historyManager);
@@ -28,9 +29,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         for (Task task : getAllTasksEpicAndSubtasks()) {
             dataToString+=toString(task);
         }
-        dataToString+="\n"+historyToString(historyManager); // перенос на новую строку был в методе toString, убрал везде StringBuilder, теперь перенос на 104 строке.
-        try (Writer fileWriter = new FileWriter(filename))
-        {
+        dataToString+=NEW_LINE+historyToString(historyManager); // перенос на новую строку был в методе toString, убрал везде StringBuilder, теперь перенос на 104 строке.
+        try (Writer fileWriter = new FileWriter(filename)) {
             fileWriter.write(dataToString);
         }
         catch (IOException e){
@@ -56,7 +56,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             return;
         }
         String[] lines = data.split("\r?\n");
-        for (int i=0; i< lines.length; i++) {
+        for (int i=1; i< lines.length; i++) {
             if (lines[i].isEmpty()){
                 i++;
                 reloadHistory(lines[i]);
@@ -101,7 +101,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     //Сохранения задачи в строку String toString(Task task).
     public String toString(Task task){
-        String taskToString = "\n"+task.getId()+","+getTaskType(task)+","+task.getTitle()+","+task.getStatus()+","+task.getDescription()+",";
+        String taskToString = NEW_LINE+task.getId()+","+getTaskType(task)+","+task.getTitle()+","+task.getStatus()+","+task.getDescription()+",";
         if (getTaskType(task)== TaskType.SUBTASK){
             Subtask subtask = (Subtask) task;
             taskToString+=subtask.getEpicId()+",";
@@ -112,19 +112,26 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     //Создание задач из файла
     public void taskFromString(String line){
         String[] lineData=line.split(",");
-        if(lineData[1].equals(TaskType.TASK.toString())){
-            Task task = new Task(Integer.parseInt(lineData[0]), lineData[2], lineData[4], TaskStatus.valueOf(lineData[3]));
+        int taskId = Integer.parseInt(lineData[0]); //id задачи
+        String taskType = lineData[1];
+        String taskName = lineData[2];
+        TaskStatus taskStatus = TaskStatus.valueOf(lineData[3]);
+        String taskDescription = lineData[4];
+
+        if(taskType.equals(TaskType.TASK.toString())){
+            Task task = new Task(taskId, taskName, taskDescription, taskStatus);
             tasksById.put(task.getId(), task);
         }
-        if(lineData[1].equals(TaskType.EPIC.toString())){
-            Epic epic=new Epic(Integer.parseInt(lineData[0]), lineData[2], lineData[4], TaskStatus.valueOf(lineData[3]));
+        if(taskType.equals(TaskType.EPIC.toString())){
+            Epic epic=new Epic(taskId, taskName, taskDescription, taskStatus);
             epicsById.put(epic.getId(), epic);
         }
-        if (lineData[1].equals(TaskType.SUBTASK.toString())){
-            Subtask subtask = new Subtask(Integer.parseInt(lineData[0]), lineData[2], lineData[4], TaskStatus.valueOf(lineData[3]), Integer.parseInt(lineData[5]));
+        if (taskType.equals(TaskType.SUBTASK.toString())){
+            int epicIdBelongSubtask = Integer.parseInt(lineData[5]);
+            Subtask subtask = new Subtask(taskId, taskName, taskDescription, taskStatus, epicIdBelongSubtask);
             subtasksById.put(subtask.getId(), subtask);
             LinkedList<Integer> subtasksIdList;
-            Epic epic = epicsById.get(Integer.parseInt(lineData[5]));
+            Epic epic = epicsById.get(epicIdBelongSubtask);
             if (epic.getSubtasksIds()!=null) {
                 subtasksIdList = epic.getSubtasksIds();
             } else {
