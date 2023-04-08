@@ -8,6 +8,8 @@ import tasks.Subtask;
 import tasks.Task;
 import tasks.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class Main {
@@ -17,11 +19,13 @@ public class Main {
         TaskManager taskManager = Managers.getDefaultTaskManager();
 
         //Создаем задачи
-        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW);
+        Task task = new Task("Task 1", "Description 1", TaskStatus.NEW, LocalDateTime.of(2021, 4, 11, 18, 1), Duration.ofHours(6));
         taskManager.createTask(task);
 
-        Task task2 = new Task("Task 2", "Description 2", TaskStatus.NEW);
+        Task task2 = new Task("Task 2", "Description 2", TaskStatus.NEW, LocalDateTime.of(2021, 4, 11, 12, 0), Duration.ofHours(6));
+        System.out.println(taskManager.checkTaskForIntersection(task2));
         taskManager.createTask(task2);
+
 
         //Создаем эпики
         Epic epic = new Epic("my epic 1", "Description 1-1");
@@ -30,10 +34,14 @@ public class Main {
         Epic epic2 = new Epic("my epic 2", "Description 1-2");
         taskManager.createEpic(epic2);
 
+        Epic epic4 = new Epic("my epic 4", "Description 1-2");
+        taskManager.updateEpic(epic4, 4);
+
+
         //Создаем subtasks
-        taskManager.createSubtask(epic, new Subtask("subtask#1 epic#1", "Description 1-1-1", TaskStatus.DONE));
-        taskManager.createSubtask(epic, new Subtask("subtask#2 epic#1", "Description 1-2-2", TaskStatus.DONE));
-        taskManager.createSubtask(epic, new Subtask("subtask#3 epic#1", "Description 1-2-2", TaskStatus.DONE));
+        taskManager.createSubtask(epic, new Subtask("subtask#1 epic#1", "Description 1-1-1", TaskStatus.DONE, LocalDateTime.of(2021, 4, 8, 12, 0), Duration.ofHours(6)));
+        taskManager.createSubtask(epic, new Subtask("subtask#2 epic#1", "Description 1-2-2", TaskStatus.DONE, LocalDateTime.of(2021, 4, 9, 9, 0), Duration.ofHours(6)));
+        taskManager.createSubtask(epic, new Subtask("subtask#3 epic#1", "Description 1-2-2", TaskStatus.DONE, LocalDateTime.of(2021, 4, 10, 12, 0), Duration.ofHours(6)));
 
         //Получаем задачи по ID
         taskManager.getTaskById(1);
@@ -49,7 +57,7 @@ public class Main {
         //taskManager.deleteSubtaskById(7);//удаляем Subtask
         //taskManager.deleteEpicById(4); //удаляем Epic
         //taskManager.deleteEpicById(3);//удаляем Epic
-        taskManager.clearAllSubtasksFromEpic(epic);
+        //taskManager.clearAllSubtasksFromEpic(epic);
 
         //Выводим всё на экран:
         System.out.print("--Print all tasks--\n");
@@ -61,6 +69,11 @@ public class Main {
         List<Task> allTasksInHistory=taskManager.getHistory();
         for (Task task1 : allTasksInHistory) {
             System.out.println(task1);
+        }
+
+        System.out.println("--Print sorted tasks by time--");
+        for (Task prioritizedTask : taskManager.getPrioritizedTasks()) {
+            System.out.println(prioritizedTask);
         }
     }
 }
