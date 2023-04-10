@@ -54,10 +54,9 @@ public class Main {
         taskManager.getSubtaskById(7);
         taskManager.getSubtaskById(6);
         taskManager.getSubtaskById(7);
-        //taskManager.deleteSubtaskById(7);//удаляем Subtask
-        //taskManager.deleteEpicById(4); //удаляем Epic
-        //taskManager.deleteEpicById(3);//удаляем Epic
-        //taskManager.clearAllSubtasksFromEpic(epic);
+        taskManager.deleteTaskById(1);
+        taskManager.deleteEpicById(4);
+        taskManager.deleteSubtaskById(6);
 
         //Выводим всё на экран:
         System.out.print("--Print all tasks--\n");

@@ -98,7 +98,7 @@ public class Task {
         else return null;
     }
 
-    public void setEndTime(LocalDateTime endTime) {
+    protected void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 

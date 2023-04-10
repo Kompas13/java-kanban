@@ -66,7 +66,7 @@ public class InMemoryTaskManager implements TaskManager {
             historyManager.remove(id);
         }
         tasksById.clear();
-        updateTreeSetTasksSortedByStartTime();
+        updateTreeSetTasksSortedByStartTime();//здесь удаляются только задачи Tasks (Epic и Subtask остаются)
     }
 
     //2.3. Получение Task по идентификатору
@@ -86,7 +86,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
             task.setId(getNextId());
             tasksById.put(task.getId(), task);
-            updateTreeSetTasksSortedByStartTime();
+            tasksSortedByStartTime.add(task);
     }
 
     //2.5. Обновление Task
@@ -146,7 +146,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void createEpic(Epic epic) {
         epic.setId(getNextId());
         epicsById.put(epic.getId(), epic);
-        updateTreeSetTasksSortedByStartTime();
+        tasksSortedByStartTime.add(epic);
     }
 
     //2.5. Обновление Epic
@@ -271,11 +271,14 @@ public class InMemoryTaskManager implements TaskManager {
             throw new ManagerSaveException("Неправильно введен Subtask ID");
         }
         int idEpic = subtasksById.get(id).getEpicId(); //получаем id epic к которому привязан удаляемый subtask
-        epicsById.get(idEpic).getSubtasksIds().remove(Integer.valueOf(id));// удаляем id subtask из ArrayList epic
-        historyManager.remove(id);
+        LinkedList<Integer> newSubtaskId;
+        newSubtaskId = epicsById.get(idEpic).getSubtasksIds();// удаляем id subtask из ArrayList epic
+        newSubtaskId.remove((Integer)id);
+        epicsById.get(idEpic).setSubtasksIds(newSubtaskId);
         subtasksById.remove(id);
+        historyManager.remove(id);
         updateEpicStatus(epicsById.get(idEpic));
-        epicsById.get(epicsById.get(idEpic));
+        checkTimeOfEpic(epicsById.get(idEpic));
         updateTreeSetTasksSortedByStartTime();
     }
 
@@ -316,33 +319,22 @@ public class InMemoryTaskManager implements TaskManager {
     //Установка временных переменных Epic
     @Override
     public void checkTimeOfEpic(Epic epic) {
-        LocalDateTime epicStartTime = null;
-        LocalDateTime epicEndTime = null;
-        Duration duration = null;
-        if (epic.getSubtasksIds()==null){
+        if (epic.getSubtasksIds()==null||epic.getSubtasksIds().isEmpty()){
             return;
         }
-        for (Integer subtasksId : epic.getSubtasksIds()) {
-            LocalDateTime subtaskStartTime = subtasksById.get(subtasksId).getStartTime();
-            LocalDateTime subtaskEndTime = subtasksById.get(subtasksId).getEndTime();
-            Duration subtaskDuration = subtasksById.get(subtasksId).getDuration();
-
-            if (epicStartTime == null && subtaskStartTime != null) {
-                epicStartTime = subtaskStartTime;
+        TreeSet<Subtask> subtasksSortedByStartTime = new TreeSet<>(Comparator.comparing(Subtask::getStartTime, Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Subtask::getId));
+        TreeSet<Subtask> subtasksSortedByEndTime = new TreeSet<>(Comparator.comparing(Subtask::getEndTime, Comparator.nullsFirst(Comparator.naturalOrder())).thenComparing(Subtask::getId).reversed());
+        subtasksSortedByStartTime.addAll(subtasksById.values());
+        subtasksSortedByEndTime.addAll(subtasksById.values());
+        LocalDateTime epicStartTime = subtasksSortedByStartTime.stream().findFirst().get().getStartTime();
+        LocalDateTime epicEndTime = subtasksSortedByEndTime.stream().findFirst().get().getEndTime();
+        Duration duration = null;
+        for (Subtask subtask : subtasksSortedByEndTime) {
+            if (duration==null){
+                duration = subtask.getDuration();
             }
-            if (epicEndTime == null && subtaskEndTime!=null) {
-                epicEndTime = subtaskEndTime;
-            }
-            if (epicStartTime != null && subtaskStartTime != null && subtaskStartTime.isBefore(epicStartTime)) {
-                epicStartTime = subtaskStartTime;
-            }
-            if (epicEndTime != null && subtaskEndTime != null && subtaskEndTime.isAfter(epicEndTime)) {
-                epicEndTime = subtaskEndTime;
-            }
-            if (duration == null && subtaskDuration != null) {
-                duration = subtaskDuration;
-            } else if (duration != null && subtaskDuration != null) {
-                duration = duration.plus(subtaskDuration);
+            else {
+                duration = duration.plus(subtask.getDuration());
             }
         }
         epic.setStartTime(epicStartTime);
@@ -368,16 +360,25 @@ public class InMemoryTaskManager implements TaskManager {
     //Проверка задач на пересечение по времени
     @Override
     public boolean checkTaskForIntersection(Task task1) {
+        if(task1.getStartTime()==null){
+            return false;
+        }
+        else return isTimeSuperImposedOnOther(task1.getStartTime(), task1.getEndTime());
+    }
+
+    public boolean isTimeSuperImposedOnOther(LocalDateTime startTime, LocalDateTime endTime){
         boolean checkFlag = false;
         for (Task task2 : tasksSortedByStartTime) {
-            if (task1.getStartTime()==null||task2.getStartTime()==null){
+            if (task2.getStartTime()==null){
                 continue;
             }
-            if ((task1.getStartTime().isBefore(task2.getStartTime())&&task1.getEndTime().isBefore(task2.getStartTime()))||
-                    (task2.getStartTime().isBefore(task1.getStartTime())&&task2.getEndTime().isBefore(task1.getStartTime()))){
+            if ((startTime.isBefore(task2.getStartTime())&&endTime.isBefore(task2.getStartTime()))||
+                    (task2.getStartTime().isBefore(startTime)&&task2.getEndTime().isBefore(startTime))) {
                 continue;
             }
-            else checkFlag = true;
+            else {
+                checkFlag = true;
+            }
         }
         return checkFlag;
     }

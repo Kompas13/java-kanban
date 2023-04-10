@@ -119,7 +119,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         fileBackedTaskManager.deleteEpicById(4);
         fileBackedTaskManager.deleteSubtaskById(6);
         fileBackedTaskManager.loadFile("src/resources/saveData.CSV");
-        assertEquals("[Task{id=2, title='Task 2', description='Description 2, status=NEW, startTime=2024-05-09T12:00, duration=PT6H,endTime=2024-05-09T18:00}, Task{id=3, title='Test epic 1', description='Test Description 1, status=DONE, startTime=2024-04-10T12:00, duration=PT12H,endTime=null}, Task{id=5, title='subtask#1 epic#1', description='Description 1-1-1, status=DONE, startTime=2024-04-10T12:00, duration=PT6H,endTime=2024-04-10T18:00}]",
+        assertEquals("[Task{id=2, title='Task 2', description='Description 2, status=NEW, startTime=2024-05-09T12:00, duration=PT6H,endTime=2024-05-09T18:00}, Task{id=3, title='Test epic 1', description='Test Description 1, status=DONE, startTime=2024-04-10T12:00, duration=PT6H,endTime=2024-04-10T18:00}, Task{id=5, title='subtask#1 epic#1', description='Description 1-1-1, status=DONE, startTime=2024-04-10T12:00, duration=PT6H,endTime=2024-04-10T18:00}]",
                 fileBackedTaskManager.getAllTasksEpicAndSubtasks().toString(), "Неверно удаляются задачи из файла");
     }
 }

@@ -26,14 +26,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     //Сохранение в файл
     public void saveAsFile() {
-        String dataToString ="id,type,name,status,description,startTime,duration,epic,";
+        StringBuilder dataToString = new StringBuilder("id,type,name,status,description,startTime,duration,epic,");
 
         for (Task task : getAllTasksEpicAndSubtasks()) {
-            dataToString+=toString(task);
+            dataToString.append(toString(task));
         }
-        dataToString+=NEW_LINE+historyToString(historyManager);
+        dataToString.append(NEW_LINE).append(historyToString(historyManager));
         try (Writer fileWriter = new FileWriter(filename)) {
-            fileWriter.write(dataToString);
+            fileWriter.write(dataToString.toString());
         }
         catch (IOException e){
             throw new ManagerSaveException("Ошибка записи файла");
@@ -103,12 +103,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     //Сохранения задачи в строку String toString(Task task).
     public String toString(Task task){
-        String taskToString = NEW_LINE+task.getId()+","+getTaskType(task)+","+task.getTitle()+","+task.getStatus()+","+task.getDescription()+","+task.getStartTime()+","+task.getDuration()+",";
+        StringBuilder taskToString= new StringBuilder();
+        taskToString.append(NEW_LINE).append(task.getId()).append(",").append(getTaskType(task)).append(",").append(task.getTitle()).append(",").append(task.getStatus()).append(",").append(task.getDescription()).append(",").append(task.getStartTime()).append(",").append(task.getDuration()).append(",");
         if (getTaskType(task)== TaskType.SUBTASK){
             Subtask subtask = (Subtask) task;
-            taskToString+=subtask.getEpicId()+",";
+            taskToString.append(subtask.getEpicId()).append(",");
         }
-        return taskToString;
+        return String.valueOf(taskToString);
     }
 
     //Создание задач из файла
@@ -154,15 +155,15 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     //Сохранения менеджера истории из CSV.
     public String historyToString(HistoryManager manager){
-        String historyId="\n";
+        StringBuilder historyId= new StringBuilder("\n");
         for (Task task : manager.getHistory()) {
-            historyId+=task.getId()+",";
+            historyId.append(task.getId()).append(",");
         }
-        return historyId;
+        return historyId.toString();
     }
 
-    //Перевод типов задач в Enum
-    public Enum getTaskType (Task task){
+    //Перевод типов задач в Enum  //В 6 ТЗ был такой пункт "Создайте enum с типами задач."
+    public TaskType getTaskType (Task task){
         if (String.valueOf(task.getClass()).equals("class tasks.Task")){
             return TaskType.TASK;
         }
@@ -277,13 +278,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         TaskManager fileBackedTasksManager = Managers.getFileBackedTaskManager();
         Epic epic5 = new Epic("my epic 5", "Description 1-5");
         fileBackedTasksManager.createEpic(epic5);
-/*        Epic epic = new Epic("my epic 1", "Description 1-1");
-        fileBackedTasksManager.createEpic(epic);
-        fileBackedTasksManager.createSubtask(epic, new Subtask("subtask#1 epic#1", "Description 1-1-1", TaskStatus.DONE, LocalDateTime.of(2021, 4, 8, 12, 0), Duration.ofHours(6)));
-        fileBackedTasksManager.createSubtask(epic, new Subtask("subtask#2 epic#1", "Description 1-2-2", TaskStatus.DONE, LocalDateTime.of(2021, 4, 9, 12, 0), Duration.ofHours(6)));
-        fileBackedTasksManager.getEpicById(1);
-        Task task = new Task("my Task", "Description");
-        fileBackedTasksManager.createTask(task);*/
+
 
                 //Выводим всё на экран:
         System.out.print("--Print all tasks--\n");
