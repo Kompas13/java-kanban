@@ -10,11 +10,13 @@ public class Epic extends Task {
 
     public Epic(int id, String title, String description, TaskStatus status, LocalDateTime startTime, Duration duration) {
         super(id, title, description, status, startTime, duration);
+        super.type = TaskType.EPIC;
     }
 
     public Epic(String title, String description) {
         super(title, description);
         this.setStatus(TaskStatus.NEW);
+        super.type = TaskType.EPIC;
     }
 
 
@@ -30,9 +32,7 @@ public class Epic extends Task {
         this.subtasksIds = new LinkedList<>(subtasksIds);
     }
 
-    @Override
-    public void setEndTime(LocalDateTime endTime) { //Время завершения Epic
-        // вычисляется в InMemoryTaskManager и поменяв здесь модификатор доступа на другой я не смогу его оттуда устанавливать.
-        super.setEndTime(endTime);
+    public void setEndTime(LocalDateTime endTime) {
+       this.endTime = endTime;
     }
 }

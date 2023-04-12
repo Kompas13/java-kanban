@@ -26,7 +26,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     //Сохранение в файл
     public void saveAsFile() {
-        StringBuilder dataToString = new StringBuilder("id,type,name,status,description,startTime,duration,epic,");
+        StringBuilder dataToString = new StringBuilder("id,type,name,status,description,startTime,duration,epic");
 
         for (Task task : getAllTasksEpicAndSubtasks()) {
             dataToString.append(toString(task));
@@ -104,10 +104,10 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     //Сохранения задачи в строку String toString(Task task).
     public String toString(Task task){
         StringBuilder taskToString= new StringBuilder();
-        taskToString.append(NEW_LINE).append(task.getId()).append(",").append(getTaskType(task)).append(",").append(task.getTitle()).append(",").append(task.getStatus()).append(",").append(task.getDescription()).append(",").append(task.getStartTime()).append(",").append(task.getDuration()).append(",");
-        if (getTaskType(task)== TaskType.SUBTASK){
+        taskToString.append(NEW_LINE).append(task.getId()).append(",").append(task.getType()).append(",").append(task.getTitle()).append(",").append(task.getStatus()).append(",").append(task.getDescription()).append(",").append(task.getStartTime()).append(",").append(task.getDuration());
+        if (task.getType() == TaskType.SUBTASK){
             Subtask subtask = (Subtask) task;
-            taskToString.append(subtask.getEpicId()).append(",");
+            taskToString.append(",").append(subtask.getEpicId());
         }
         return String.valueOf(taskToString);
     }
@@ -132,15 +132,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         if(taskType.equals(TaskType.TASK.toString())){
             Task task = new Task(taskId, taskName, taskDescription, taskStatus, startTime, duration);
             tasksById.put(task.getId(), task);
+            tasksSortedByStartTime.add(task);
         }
         if(taskType.equals(TaskType.EPIC.toString())){
             Epic epic=new Epic(taskId, taskName, taskDescription, taskStatus, startTime, duration);
             epicsById.put(epic.getId(), epic);
+            tasksSortedByStartTime.add(epic);
         }
         if (taskType.equals(TaskType.SUBTASK.toString())){
             int epicIdBelongSubtask = Integer.parseInt(lineData[7]);
             Subtask subtask = new Subtask(taskId, taskName, taskDescription, taskStatus, startTime, duration, epicIdBelongSubtask);
             subtasksById.put(subtask.getId(), subtask);
+            tasksSortedByStartTime.add(subtask);
             LinkedList<Integer> subtasksIdList;
             Epic epic = epicsById.get(epicIdBelongSubtask);
             if (epic.getSubtasksIds()!=null) {
@@ -159,20 +162,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         for (Task task : manager.getHistory()) {
             historyId.append(task.getId()).append(",");
         }
+        historyId.setLength(historyId.length()-1);//убираем последнюю запятую
         return historyId.toString();
-    }
-
-    //Перевод типов задач в Enum  //В 6 ТЗ был такой пункт "Создайте enum с типами задач."
-    public TaskType getTaskType (Task task){
-        if (String.valueOf(task.getClass()).equals("class tasks.Task")){
-            return TaskType.TASK;
-        }
-        else if (String.valueOf(task.getClass()).equals("class tasks.Epic")){
-            return TaskType.EPIC;
-        }
-        else {
-            return TaskType.SUBTASK;
-        }
     }
 
     @Override
@@ -276,9 +267,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static void main(String[] args) {
         TaskManager fileBackedTasksManager = Managers.getFileBackedTaskManager();
-        Epic epic5 = new Epic("my epic 5", "Description 1-5");
-        fileBackedTasksManager.createEpic(epic5);
-
+        Epic epic1 = new Epic("my epic 1", "Description 1-1");
+        fileBackedTasksManager.createEpic(epic1);
+        fileBackedTasksManager.createSubtask(epic1, new Subtask("subtask#1 epic#1", "Description 1-1-1", TaskStatus.DONE, LocalDateTime.of(2021, 5, 8, 12, 0), Duration.ofHours(6)));
+        fileBackedTasksManager.createSubtask(epic1, new Subtask("subtask#2 epic#1", "Description 1-2-2", TaskStatus.DONE, LocalDateTime.of(2021, 5, 9, 9, 0), Duration.ofHours(6)));
+        fileBackedTasksManager.getEpicById(1);
 
                 //Выводим всё на экран:
         System.out.print("--Print all tasks--\n");

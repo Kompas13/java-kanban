@@ -36,7 +36,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         fileBackedTaskManager.createTask(task);
         List<String> result = Files.readAllLines(Path.of("src/resources/saveData.CSV"));
         Assertions.assertEquals(
-                "[id,type,name,status,description,startTime,duration,epic,, 7,TASK,Task 99,NEW,Description 1,2021-04-15T12:00,PT6H,, ]",
+                "[id,type,name,status,description,startTime,duration,epic, 7,TASK,Task 99,NEW,Description 1,2021-04-15T12:00,PT6H]",
                 result.toString(), "Некорректное сохранение файла"
         );
     }
@@ -80,7 +80,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
 
     @Test
     void testToString() {
-        assertEquals("\n3,EPIC,Test epic 1,DONE,Test Description 1,2024-04-10T12:00,PT12H,", fileBackedTaskManager.toString(epic1), "Некорректное преобразование задачи в строку");
+        assertEquals("\n3,EPIC,Test epic 1,DONE,Test Description 1,2024-04-10T12:00,PT12H", fileBackedTaskManager.toString(epic1), "Некорректное преобразование задачи в строку");
     }
 
     @Test
@@ -94,16 +94,16 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
     void historyToString() {
         fileBackedTaskManager.getTaskById(1);
         fileBackedTaskManager.getEpicById(3);
-        assertEquals("\n1,3,", fileBackedTaskManager.historyToString(fileBackedTaskManager.historyManager), "Некорректное преобразование истории в строку");
+        assertEquals("\n1,3", fileBackedTaskManager.historyToString(fileBackedTaskManager.historyManager), "Некорректное преобразование истории в строку");
     }
 
-    @Test
+/*    @Test
     void getTaskType() {
         Task task3 = new Task("Task 1", "Description 1", TaskStatus.NEW, LocalDateTime.of(2021, 4, 11, 18, 2), Duration.ofHours(6));
         fileBackedTaskManager.createTask(task3);
         assertEquals(TaskType.TASK, fileBackedTaskManager.getTaskType(task3), "Некорректное получение типа задачи");
 
-    }
+    }*/
 
     @Test
     void fileBackedTaskManagerIsEmpty(){

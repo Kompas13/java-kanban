@@ -227,23 +227,23 @@ public class InMemoryTaskManager implements TaskManager {
     //2.4. —оздание Subtask
     @Override
     public void createSubtask(Epic epic, Subtask subtask) {
-        if (checkTaskForIntersection(subtask)) {
-            throw new ManagerSaveException("ѕроверьте, чтобы задачи не пересекались по времени");
+        if (!checkTaskForIntersection(subtask)) {
+            subtask.setId(getNextId());
+            subtasksById.put(subtask.getId(), subtask);
+            LinkedList<Integer> subtasksIdList;
+            if (epic.getSubtasksIds() != null) {
+                subtasksIdList = epic.getSubtasksIds();
+            } else {
+                subtasksIdList = new LinkedList<>();
+            }
+            subtasksIdList.add(subtask.getId());//положили в ArrayList id substring
+            epic.setSubtasksIds(subtasksIdList);//положили в epic обновленный массив
+            subtask.setEpicId(epic.getId()); //положили в subtask id epic
+            updateEpicStatus(epic); //ќбновл€ем статус Epic при добавлении элементов Subtask
+            checkTimeOfEpic(epic); //обновл€ем временные параметры Epic
+            updateTreeSetTasksSortedByStartTime();
         }
-        subtask.setId(getNextId());
-        subtasksById.put(subtask.getId(), subtask);
-        LinkedList<Integer> subtasksIdList;
-        if (epic.getSubtasksIds() != null) {
-            subtasksIdList = epic.getSubtasksIds();
-        } else {
-            subtasksIdList = new LinkedList<>();
-        }
-        subtasksIdList.add(subtask.getId());//положили в ArrayList id substring
-        epic.setSubtasksIds(subtasksIdList);//положили в epic обновленный массив
-        subtask.setEpicId(epic.getId()); //положили в subtask id epic
-        updateEpicStatus(epic); //ќбновл€ем статус Epic при добавлении элементов Subtask
-        checkTimeOfEpic(epic); //обновл€ем временные параметры Epic
-        updateTreeSetTasksSortedByStartTime();
+        else throw new ManagerSaveException("ѕроверьте, чтобы задачи не пересекались по времени");
     }
 
     //2.5. ќбновление Subtask
@@ -378,6 +378,7 @@ public class InMemoryTaskManager implements TaskManager {
             }
             else {
                 checkFlag = true;
+                break;
             }
         }
         return checkFlag;

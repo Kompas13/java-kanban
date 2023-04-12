@@ -1,4 +1,4 @@
-id,type,name,status,description,startTime,duration,epic,
-1,TASK,Task 1,NEW,Description 1,2021-04-15T12:00,PT6H,
+id,type,name,status,description,startTime,duration,epic
+1,TASK,Task 1,NEW,Description 1,2021-04-15T12:00,PT6H
 
-1,
+1
