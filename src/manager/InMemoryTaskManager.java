@@ -28,7 +28,23 @@ public class InMemoryTaskManager implements TaskManager {
 
     }
 
-    public int getNextId() {
+    protected void setTasksById(HashMap<Integer, Task> tasksById) {
+        this.tasksById = tasksById;
+    }
+
+    protected void setEpicsById(HashMap<Integer, Epic> epicsById) {
+        this.epicsById = epicsById;
+    }
+
+    protected void setSubtasksById(HashMap<Integer, Subtask> subtasksById) {
+        this.subtasksById = subtasksById;
+    }
+
+    protected void setTasksSortedByStartTime(TreeSet<Task> tasksSortedByStartTime) {
+        this.tasksSortedByStartTime = tasksSortedByStartTime;
+    }
+
+    protected int getNextId() {
         return nextId++;
     }
 

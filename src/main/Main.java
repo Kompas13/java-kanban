@@ -1,24 +1,40 @@
 package main;
 
-import manager.HistoryManager;
-import manager.Managers;
-import manager.TaskManager;
+import manager.*;
 import tasks.Epic;
-import tasks.Subtask;
 import tasks.Task;
 import tasks.TaskStatus;
+import tasks.Subtask;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        TaskManager taskManager = Managers.getDefaultTaskManager();
 
-        //Создаем задачи
+
+
+/*    HttpTaskManager taskManager = Managers.getHttpTaskManager();
+        taskManager.load();
+        System.out.println(taskManager.getAllTasks());
+        System.out.println(taskManager.getAllEpic());
+        System.out.println(taskManager.getAllSubtask());
+        System.out.println(taskManager.getHistory());
+        System.out.println(taskManager.tasksById.values());
+        System.out.println(taskManager.tasksById.keySet());
+        System.out.println(taskManager.getTaskById(2));*/
+        HttpTaskServer server = new HttpTaskServer();
+        server.start();
+
+
+        //TaskManager taskManager = Managers.getDefaultTaskManager();
+
+     /*  //Создаем задачи
         Task task = new Task("Task 1", "Description 1", TaskStatus.NEW, LocalDateTime.of(2021, 4, 11, 18, 1), Duration.ofHours(6));
         taskManager.createTask(task);
 
@@ -56,9 +72,13 @@ public class Main {
         taskManager.getSubtaskById(7);
         taskManager.deleteTaskById(1);
         taskManager.deleteEpicById(4);
-        taskManager.deleteSubtaskById(6);
+        taskManager.deleteSubtaskById(6);*/
+      /*  for (Task allTasksEpicAndSubtask : taskManager.getAllTasksEpicAndSubtasks()) {
+            System.out.println(allTasksEpicAndSubtask);
+        }*/
 
-        //Выводим всё на экран:
+
+/*        //Выводим всё на экран:
         System.out.print("--Print all tasks--\n");
         for (Task allTasksEpicAndSubtask : taskManager.getAllTasksEpicAndSubtasks()) {
             System.out.println(allTasksEpicAndSubtask);
@@ -73,6 +93,6 @@ public class Main {
         System.out.println("--Print sorted tasks by time--");
         for (Task prioritizedTask : taskManager.getPrioritizedTasks()) {
             System.out.println(prioritizedTask);
-        }
+        }*/
     }
 }

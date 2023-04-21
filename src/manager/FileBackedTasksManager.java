@@ -15,24 +15,24 @@ import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
 
-    private final String filename;
     private final String NEW_LINE = "\n";
+    private String fileName = "src/resources/saveData.CSV";;
+
 
     public FileBackedTasksManager(HistoryManager historyManager) {
         super(historyManager);
-        filename = "src/resources/saveData.CSV";
-        loadFile(filename);
+        //load();
     }
 
     //Сохранение в файл
-    public void saveAsFile() {
+    public void save() {
         StringBuilder dataToString = new StringBuilder("id,type,name,status,description,startTime,duration,epic");
 
         for (Task task : getAllTasksEpicAndSubtasks()) {
             dataToString.append(toString(task));
         }
         dataToString.append(NEW_LINE).append(historyToString(historyManager));
-        try (Writer fileWriter = new FileWriter(filename)) {
+        try (Writer fileWriter = new FileWriter(fileName)) {
             fileWriter.write(dataToString.toString());
         }
         catch (IOException e){
@@ -51,7 +51,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     //Парсинг считываемого файла
-    public void loadFile(String fileName){
+    public void load(){
         int maxId=1;
         String data=readFileContents(fileName);
         if (data.isEmpty()){
@@ -169,111 +169,106 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public void clearAllTasks() {
         super.clearAllTasks();
-        saveAsFile();
+        save();
     }
 
     @Override
     public Task getTaskById(int id) {
         historyManager.add(tasksById.get(id));
-        saveAsFile();
+        save();
         return tasksById.get(id);
     }
 
     @Override
     public void createTask(Task task) {
         super.createTask(task);
-        saveAsFile();
+        save();
     }
 
     @Override
     public void updateTask(Task task, int id) {
         super.updateTask(task, id);
-        saveAsFile();
+        save();
     }
 
     @Override
     public void deleteTaskById(int id) {
         super.deleteTaskById(id);
-        saveAsFile();
+        save();
     }
 
     @Override
     public void clearAllEpics() {
         super.clearAllEpics();
-        saveAsFile();
+        save();
     }
 
     @Override
     public Epic getEpicById(int id) {
         historyManager.add(epicsById.get(id));
-        saveAsFile();
+        save();
         return epicsById.get(id);
     }
 
     @Override
     public void createEpic(Epic epic) {
         super.createEpic(epic);
-        saveAsFile();
+        save();
     }
 
     @Override
     public void updateEpic(Epic epic, int id) {
         super.updateEpic(epic, id);
-        saveAsFile();
+        save();
     }
 
     @Override
     public void deleteEpicById(int id) {
         super.deleteEpicById(id);
-        saveAsFile();
+        save();
     }
 
     @Override
     public void clearAllSubtasks() {
         super.clearAllSubtasks();
-        saveAsFile();
+        save();
     }
 
     @Override
     public void clearAllSubtasksFromEpic(Epic epic) {
         super.clearAllSubtasksFromEpic(epic);
-        saveAsFile();
+        save();
     }
 
     @Override
     public Subtask getSubtaskById(int id) {
         historyManager.add(subtasksById.get(id));
-        saveAsFile();
+        save();
         return subtasksById.get(id);
     }
 
     @Override
     public void createSubtask(Epic epic, Subtask subtask) {
         super.createSubtask(epic, subtask);
-        saveAsFile();
+        save();
     }
 
     @Override
     public void updateSubtask(Subtask subtask, int id) {
         super.updateSubtask(subtask, id);
-        saveAsFile();
+        save();
     }
 
     @Override
     public void deleteSubtaskById(int id) {
         super.deleteSubtaskById(id);
-        saveAsFile();
+        save();
     }
 
     public static void main(String[] args) {
         TaskManager fileBackedTasksManager = Managers.getFileBackedTaskManager();
-        Epic epic1 = new Epic("my epic 1", "Description 1-1");
-        fileBackedTasksManager.createEpic(epic1);
-        fileBackedTasksManager.createSubtask(epic1, new Subtask("subtask#1 epic#1", "Description 1-1-1", TaskStatus.DONE, LocalDateTime.of(2021, 5, 8, 12, 0), Duration.ofHours(6)));
-        fileBackedTasksManager.createSubtask(epic1, new Subtask("subtask#2 epic#1", "Description 1-2-2", TaskStatus.DONE, LocalDateTime.of(2021, 5, 9, 9, 0), Duration.ofHours(6)));
-        fileBackedTasksManager.getEpicById(1);
 
-                //Выводим всё на экран:
+        //Выводим всё на экран:
         System.out.print("--Print all tasks--\n");
         for (Task allTasksEpicAndSubtask : fileBackedTasksManager.getAllTasksEpicAndSubtasks()) {
             System.out.println(allTasksEpicAndSubtask);
@@ -289,11 +284,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         for (Task prioritizedTask : fileBackedTasksManager.getPrioritizedTasks()) {
             System.out.println(prioritizedTask);
         }
-
     }
-
-
-
 }
 
 

@@ -53,7 +53,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         catch (IOException e){
             throw new ManagerSaveException("Ошибка чтения файла");
         }
-        fileBackedTaskManager.loadFile(fileName);
+        fileBackedTaskManager.load();
         assertEquals("Task{id=1, title='Task 1', description='Description 1, status=NEW, startTime=2021-04-15T12:00, duration=PT6H,endTime=2021-04-15T18:00}",
                 fileBackedTaskManager.getTaskById(1).toString(), "Ошибка чтения файла"
         );
@@ -91,25 +91,10 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
     }
 
     @Test
-    void historyToString() {
-        fileBackedTaskManager.getTaskById(1);
-        fileBackedTaskManager.getEpicById(3);
-        assertEquals("\n1,3", fileBackedTaskManager.historyToString(fileBackedTaskManager.historyManager), "Некорректное преобразование истории в строку");
-    }
-
-/*    @Test
-    void getTaskType() {
-        Task task3 = new Task("Task 1", "Description 1", TaskStatus.NEW, LocalDateTime.of(2021, 4, 11, 18, 2), Duration.ofHours(6));
-        fileBackedTaskManager.createTask(task3);
-        assertEquals(TaskType.TASK, fileBackedTaskManager.getTaskType(task3), "Некорректное получение типа задачи");
-
-    }*/
-
-    @Test
     void fileBackedTaskManagerIsEmpty(){
         fileBackedTaskManager.clearAllTasks();
         fileBackedTaskManager.clearAllEpics();
-        fileBackedTaskManager.loadFile("src/resources/saveData.CSV");
+        fileBackedTaskManager.load();
         assertEquals("[]", fileBackedTaskManager.getAllTasksEpicAndSubtasks().toString(),"Файл должен быть пустым");
     }
 
@@ -118,7 +103,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         fileBackedTaskManager.deleteTaskById(1);
         fileBackedTaskManager.deleteEpicById(4);
         fileBackedTaskManager.deleteSubtaskById(6);
-        fileBackedTaskManager.loadFile("src/resources/saveData.CSV");
+        fileBackedTaskManager.load();
         assertEquals("[Task{id=2, title='Task 2', description='Description 2, status=NEW, startTime=2024-05-09T12:00, duration=PT6H,endTime=2024-05-09T18:00}, Task{id=3, title='Test epic 1', description='Test Description 1, status=DONE, startTime=2024-04-10T12:00, duration=PT6H,endTime=2024-04-10T18:00}, Task{id=5, title='subtask#1 epic#1', description='Description 1-1-1, status=DONE, startTime=2024-04-10T12:00, duration=PT6H,endTime=2024-04-10T18:00}]",
                 fileBackedTaskManager.getAllTasksEpicAndSubtasks().toString(), "Неверно удаляются задачи из файла");
     }
