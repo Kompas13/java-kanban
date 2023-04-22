@@ -15,11 +15,11 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-/*        try {
+        try {
             new KVServer().start();
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
        HttpTaskServer server = new HttpTaskServer();
         server.start();
 /*

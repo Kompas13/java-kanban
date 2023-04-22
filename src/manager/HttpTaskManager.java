@@ -1,7 +1,5 @@
 package manager;
 
-import adapters.DurationAdapter;
-import adapters.LocalDateTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -22,8 +20,8 @@ public class HttpTaskManager extends FileBackedTasksManager{
         super(historyManager);
         client = new KVTaskClient("http://localhost:"+KVServer.PORT);
         gsonBuilder = new GsonBuilder();
-        gson = gsonBuilder.registerTypeAdapter(DurationAdapter.class, new DurationAdapter())
-                .registerTypeAdapter(LocalDateTimeAdapter.class, new LocalDateTimeAdapter())
+        gson = new GsonBuilder()
+                .serializeNulls()
                 .create();
         load();
     }

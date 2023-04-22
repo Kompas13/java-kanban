@@ -67,6 +67,7 @@ class HttpTaskServerTest {
     @AfterEach
     void afterEach() {
         kvServer.stop();
+        server.stop();
     }
 
     @Test

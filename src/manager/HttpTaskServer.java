@@ -404,5 +404,9 @@ public class HttpTaskServer {
         }
         h.close();
     }
+
+    public void stop(){
+        server.stop(1);
+    }
 }
 
