@@ -8,11 +8,8 @@ import com.google.gson.reflect.TypeToken;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
-
-import java.io.IOException;
 import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 
 public class HttpTaskManager extends FileBackedTasksManager{
@@ -23,7 +20,6 @@ public class HttpTaskManager extends FileBackedTasksManager{
 
     public HttpTaskManager(HistoryManager historyManager) {
         super(historyManager);
-        //startKvServer(); //Запуск KVServer для тестирования работы программы (предполагается,что KVServer будет запущен на отдельном устройстве)
         client = new KVTaskClient("http://localhost:"+KVServer.PORT);
         gsonBuilder = new GsonBuilder();
         gson = gsonBuilder.registerTypeAdapter(DurationAdapter.class, new DurationAdapter())
@@ -51,11 +47,14 @@ public class HttpTaskManager extends FileBackedTasksManager{
     @Override
     public void load() {
         String taskMapJson = client.load("taskMap");
+        int maxValue = 0;
         if (taskMapJson!=null&&!taskMapJson.isBlank()) {
             HashMap<Integer, Task> taskMap = new HashMap<>();
             Type MapTypeTask = new TypeToken<HashMap<Integer, Task>>() {}.getType();
             taskMap = gson.fromJson(taskMapJson, MapTypeTask);
             super.setTasksById(taskMap);
+            int maxValueKeyInMap=(Collections.max(taskMap.keySet()));
+            maxValue = maxValueKeyInMap;
         }
 
         String epicsMapJson = client.load("EpicsMap");
@@ -64,6 +63,10 @@ public class HttpTaskManager extends FileBackedTasksManager{
             Type MapTypeEpic = new TypeToken<HashMap<Integer, Epic>>() {}.getType();
             epicsMap = gson.fromJson(epicsMapJson, MapTypeEpic);
             super.setEpicsById(epicsMap);
+            int maxValueKeyInMap=(Collections.max(epicsMap.keySet()));
+            if (maxValueKeyInMap>maxValue){
+                maxValue=maxValueKeyInMap;
+            }
         }
 
         String subtaskMapJson = client.load("SubtaskMap");
@@ -72,6 +75,10 @@ public class HttpTaskManager extends FileBackedTasksManager{
             Type MapTypeSub = new TypeToken<HashMap<Integer, Subtask>>() {}.getType();
             subtaskMap = gson.fromJson(subtaskMapJson, MapTypeSub);
             super.setSubtasksById(subtaskMap);
+            int maxValueKeyInMap=(Collections.max(subtaskMap.keySet()));
+            if (maxValueKeyInMap>maxValue){
+                maxValue=maxValueKeyInMap;
+            }
         }
 
         String historyManagerJson = client.load("HistoryList");
@@ -82,17 +89,7 @@ public class HttpTaskManager extends FileBackedTasksManager{
                 super.historyManager.add(task);
             }
         }
-
-        System.out.println("------------");
-        //System.out.println(taskMapJson+"\n"+epicsMapJson+"\n"+subtaskMapJson+"\n"+historyManagerJson);
-    }
-
-    public void startKvServer(){
-        try {
-            new KVServer().start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        super.nextId = maxValue; //id - следующего элемента
     }
 
 }

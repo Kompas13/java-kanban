@@ -370,6 +370,7 @@ public class InMemoryTaskManager implements TaskManager {
     //ћетод возвращающий отсортированные задачи
     @Override
     public ArrayList<Task> getPrioritizedTasks() {
+        updateTreeSetTasksSortedByStartTime();
         return new ArrayList<>(tasksSortedByStartTime);
     }
 

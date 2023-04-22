@@ -1,6 +1,5 @@
 package manager;
 
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
@@ -18,8 +17,7 @@ import java.util.List;
 
 public class HttpTaskServer {
     private static final int PORT = 8081;
-    private TaskManager taskManager;
-    private GsonBuilder gsonBuilder;
+    public TaskManager taskManager;
     private Gson gson;
     private HttpServer server;
 
@@ -33,8 +31,9 @@ public class HttpTaskServer {
         server.createContext("/tasks", this::prioritizedTaskProcessor);
         taskManager = Managers.getHttpTaskManager();
 
-        gsonBuilder = new GsonBuilder();
-        gson = gsonBuilder.create();
+        gson = new GsonBuilder()
+                .serializeNulls()
+                .create();
     }
 
     public void start() {
@@ -66,7 +65,7 @@ public class HttpTaskServer {
                     Task task = taskManager.getTaskById(id);
                     if (task!=null){
                         String responseBody = gson.toJson(task);
-                        h.sendResponseHeaders(200, -1);
+                        h.sendResponseHeaders(200, 0);
                         try (OutputStream os = h.getResponseBody()) {
                             os.write(responseBody.getBytes());
                         }
@@ -89,7 +88,7 @@ public class HttpTaskServer {
                     System.out.println("Попытка добавления");
                     taskManager.createTask(taskFromJson);
                     h.sendResponseHeaders(201, 0);
-                    String responseBody = "ID созданной задачи"+ taskFromJson.getId();
+                    String responseBody = "ID созданной задачи "+ taskFromJson.getId();
                     try (OutputStream os = h.getResponseBody()) {
                         os.write(responseBody.getBytes(StandardCharsets.UTF_8));
                     }
@@ -183,9 +182,9 @@ public class HttpTaskServer {
                 String requestBody = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
                 Epic epicFromJson = gson.fromJson(requestBody, Epic.class);
                 if (epicFromJson != null) {
-                    taskManager.createTask(epicFromJson);
+                    taskManager.createEpic(epicFromJson);
                     h.sendResponseHeaders(201, 0);
-                    String responseBody = "ID созданной задачи"+ epicFromJson.getId();
+                    String responseBody = "ID созданной задачи "+ epicFromJson.getId();
                     try (OutputStream os = h.getResponseBody()) {
                         os.write(responseBody.getBytes(StandardCharsets.UTF_8));
                     }
@@ -276,11 +275,14 @@ public class HttpTaskServer {
             case "POST":
                 InputStream inputStream = h.getRequestBody();
                 String requestBody = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
-                Subtask subtaskFromJson = gson.fromJson(requestBody, Subtask.class);
+                String epic = requestBody.split("===")[0];
+                String subtask = requestBody.split("===")[1];
+                Epic epicFromJson = gson.fromJson(epic, Epic.class);
+                Subtask subtaskFromJson = gson.fromJson(subtask, Subtask.class);
                 if (subtaskFromJson != null) {
-                    taskManager.createTask(subtaskFromJson);
+                    taskManager.createSubtask(epicFromJson, subtaskFromJson);
                     h.sendResponseHeaders(201, 0);
-                    String responseBody = "ID созданной задачи"+ subtaskFromJson.getId();
+                    String responseBody = "ID созданной задачи "+ subtaskFromJson.getId();
                     try (OutputStream os = h.getResponseBody()) {
                         os.write(responseBody.getBytes(StandardCharsets.UTF_8));
                     }
