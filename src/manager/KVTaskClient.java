@@ -10,8 +10,8 @@ public class KVTaskClient {
     private String urlServer;
     private String apiToken;
 
-    public KVTaskClient(String urlServer) {
-        this.urlServer = urlServer;
+    public KVTaskClient() {
+        this.urlServer = "http://localhost:"+KVServer.PORT;
         apiToken = getApiToken();
 
     }

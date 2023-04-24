@@ -23,12 +23,12 @@ public class HttpTaskServer {
 
     public HttpTaskServer() throws IOException {
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
-        server.createContext("/tasks/task", this::tasksProcessor);
-        server.createContext("/tasks/epic", this::epicProcessor);
-        server.createContext("/tasks/subtask", this::subtaskProcessor);
-        server.createContext("/tasks/history", this::historyProcessor);
-        server.createContext("/tasks/subtask/epic", this::epicSubtaskProcessor);
-        server.createContext("/tasks", this::prioritizedTaskProcessor);
+        server.createContext(String.valueOf(Endpoint.TASKS), this::tasksProcessor);
+        server.createContext(String.valueOf(Endpoint.EPICS), this::epicProcessor);
+        server.createContext(String.valueOf(Endpoint.SUBTASKS), this::subtaskProcessor);
+        server.createContext(String.valueOf(Endpoint.HISTORY), this::historyProcessor);
+        server.createContext(String.valueOf(Endpoint.EPIC_SUBTASK), this::epicSubtaskProcessor);
+        server.createContext(String.valueOf(Endpoint.PRIORITY), this::prioritizedTaskProcessor);
         taskManager = Managers.getHttpTaskManager();
 
         gson = new GsonBuilder()

@@ -18,8 +18,7 @@ public class HttpTaskManager extends FileBackedTasksManager{
 
     public HttpTaskManager(HistoryManager historyManager) {
         super(historyManager);
-        client = new KVTaskClient("http://localhost:"+KVServer.PORT);
-        gsonBuilder = new GsonBuilder();
+        client = new KVTaskClient();
         gson = new GsonBuilder()
                 .serializeNulls()
                 .create();
